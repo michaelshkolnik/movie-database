@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fabflix Main</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>Fabflix</h1>
+    <button id="logout-btn">Logout</button>
+    <button id="cart-btn">Shopping Cart</button>
+</header>
+
+<section id="search-section">
+    <h2>Search Movies</h2>
+
+    <form id="search-form">
+        <!-- FULL-TEXT SEARCH BOX -->
+        <input type="text" id="title-input" name="title" placeholder="Title" autocomplete="off">
+        <div id="autocomplete-box" class="autocomplete-box"></div>
+
+        <input type="text" name="year" placeholder="Year">
+        <input type="text" name="director" placeholder="Director">
+        <input type="text" name="star" placeholder="Star">
+        <button type="submit">Search</button>
+    </form>
+</section>
+
+<section id="browse-section">
+    <h2>Browse by Genre</h2>
+    <div id="genre-list"></div>
+
+    <h2>Browse by Title</h2>
+    <div id="letter-list"></div>
+</section>
+
+<script src="js/shared.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

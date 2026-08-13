@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: fabflix
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/moviedb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USERNAME:fabflix}
+    password: ${DB_PASSWORD:fabflix}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      # 'validate' checks the JPA entities against the schema created by db/init on first run.
+      # Never use 'update' or 'create' against a database seeded by hand-written SQL.
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+
+server:
+  port: ${SERVER_PORT:8080}
+
+# Used once the TMDb-backed data seeding is wired up. Not read yet.
+tmdb:
+  api-key: ${TMDB_API_KEY:}
