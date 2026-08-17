@@ -1,8 +1,6 @@
 const genreList = document.getElementById("genre-list");
 const letterList = document.getElementById("letter-list");
 const searchForm = document.getElementById("search-form");
-const cartBtn = document.getElementById("cart-btn");
-const logoutBtn = document.getElementById("logout-btn");
 
 const titleInput = document.getElementById("title-input");
 const acBox = document.getElementById("autocomplete-box");
@@ -139,8 +137,5 @@ searchForm.addEventListener("submit", (e) => {
         })}`);
     }
 });
-
-cartBtn.addEventListener("click", () => nav("cart.html"));
-logoutBtn.addEventListener("click", () => nav("login.html"));
 
 loadBrowse();

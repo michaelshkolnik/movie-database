@@ -1,6 +1,6 @@
 # Fabflix (Spring Boot + Hibernate rewrite)
 
-A movie browsing / cart / checkout app, being rewritten from a raw-servlet +
+A movie browsing/search catalog, being rewritten from a raw-servlet +
 MongoDB project into Spring Boot + Hibernate on MySQL, aimed at being a live,
 publicly-deployable portfolio project.
 
@@ -14,7 +14,13 @@ the existing schema, Spring Data repositories, dynamic query building via
 `Specification`, and `@RestController`s serving the same JSON shapes the
 static frontend already expects. See "API" below for the full list.
 
-Not yet ported: cart/checkout, login. See "Roadmap".
+**Login, shopping cart/checkout, and reCAPTCHA from the original coursework
+project are intentionally not being ported.** They were classroom-project
+stand-ins (a "does this card id match" checkout, a Jasypt-based login) that
+don't fit a live, publicly-deployable portfolio piece, so this app is scoped
+to a pure browse/search/detail movie catalog — no accounts, no purchases.
+The static frontend's cart/login buttons and the cart/checkout/payment pages
+have been removed accordingly.
 
 ## Prerequisites
 
@@ -118,13 +124,17 @@ useful for local development, but worth knowing what's in it:
 - Customer records use **plaintext demo passwords** (e.g. `'keyboard'`,
   `'paper'`) — fine for local dev, never treat as real credentials.
 - `credit_cards` only stores a name + expiration date behind an id, not an
-  actual card number — it was already a mock "does this id match" scheme
-  in the original project, not real payment data. The checkout flow will
-  be rebuilt as an explicit demo/mock flow (see Roadmap).
+  actual card number — never real payment data.
 - There's a demo `employees` login seeded in (`classta@email.edu` /
   `classta`) from the original coursework project.
 
-Once TMDb-backed seeding is wired up, this movie/star data will likely be
+The `customers`, `credit_cards`, `sales`, and `employees` tables are no
+longer used by the app now that login/cart/checkout have been dropped —
+they're still in the schema/seed data for now (removing them cleanly means
+touching `createtable.sql` and the `db/init/` load order), but nothing in
+the running app reads or writes them.
+
+Once TMDb-backed seeding is wired up, the movie/star data will likely be
 replaced or supplemented with richer, current data (posters, cast photos,
 overviews) pulled from the TMDb API.
 
@@ -145,9 +155,10 @@ or a specific DB host, unlike the original project.
 
 1. ~~JPA entities + Spring Data repositories mapped to the existing schema.~~ Done.
 2. ~~Port search/browse/autocomplete/single-movie/single-star into `@RestController`s under `/api/...`.~~ Done.
-3. Cart/checkout as an explicit mock flow (no real payment data).
-4. Spring Security for login, with BCrypt-hashed passwords (replacing the
-   original project's Jasypt-based approach).
-5. TMDb-backed data seeding script to replace/enrich the current dataset
+3. TMDb-backed data seeding script to replace/enrich the current dataset
    with posters, cast photos, and current metadata.
-6. Deploy: containerize, managed MySQL, host the app somewhere public.
+4. Deploy: containerize, managed MySQL, host the app somewhere public.
+
+Explicitly out of scope: login, shopping cart/checkout, reCAPTCHA, and admin
+write endpoints — classroom-project artifacts that don't belong in a public
+portfolio build. See "Status" above.

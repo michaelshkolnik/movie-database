@@ -5,7 +5,6 @@ const nameEl = document.getElementById("star-name");
 const birthEl = document.getElementById("star-birth");
 const bodyEl = document.getElementById("star-movie-body");
 const backBtn2 = document.getElementById("back-list");
-const cartBtn2 = document.getElementById("cart-btn");
 async function loadStar() {
     const data = await fetchJSON(`${API_BASE}/single-star?${qs({ id: starId })}`);
     nameEl.textContent = data.name || "";
@@ -29,5 +28,4 @@ backBtn2.addEventListener("click", () => {
     if (retQ) nav(`movie-list.html${retQ}`);
     else nav("main.html");
 });
-cartBtn2.addEventListener("click", () => nav("cart.html"));
 loadStar();

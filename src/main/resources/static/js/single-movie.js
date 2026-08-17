@@ -45,29 +45,5 @@ document.addEventListener("DOMContentLoaded", () => {
         window.history.back();
     });
 
-    document.getElementById("checkout-btn").addEventListener("click", () => {
-        window.location.href = "cart.html";
-    });
-
-    document.getElementById("add-cart").addEventListener("click", async () => {
-        try {
-            const res = await fetch(`/api/cart`, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams({ movieId, delta: "1" }),
-            });
-
-            if (res.ok) {
-                alert(`Added "${titleEl.textContent}" to cart!`);
-            } else {
-                alert("Failed to add to cart");
-            }
-        } catch (err) {
-            console.error("Add to cart failed:", err);
-            alert("Network error adding to cart.");
-        }
-    });
-
-
     fetchMovie();
 });

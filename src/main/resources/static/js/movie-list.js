@@ -5,7 +5,6 @@ const pageInfo = document.getElementById("page-info");
 const pageSize = document.getElementById("page-size");
 const sortBy = document.getElementById("sort-by");
 const backMain = document.getElementById("back-main");
-const cartBtnList = document.getElementById("cart-btn");
 
 const urlp = getParams();
 
@@ -62,19 +61,7 @@ async function loadPage() {
         const rating = document.createElement("td");
         rating.textContent = Number(m.rating || 0).toFixed(1);
 
-        const add = document.createElement("td");
-        const btn = document.createElement("button");
-        btn.textContent = "+";
-        btn.addEventListener("click", async () => {
-            await fetchJSON(`/api/cart`, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: qs({ movieId: m.id, delta: 1 })
-            });
-        });
-        add.appendChild(btn);
-
-        tr.append(title, year, dir, gens, stars, rating, add);
+        tr.append(title, year, dir, gens, stars, rating);
         tbody.appendChild(tr);
     });
 
@@ -111,6 +98,5 @@ sortBy.addEventListener("change", () => {
 });
 
 backMain.addEventListener("click", () => nav("main.html"));
-cartBtnList.addEventListener("click", () => nav("cart.html"));
 
 loadPage();
