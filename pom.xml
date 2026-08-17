@@ -108,6 +108,21 @@
         </configuration>
       </plugin>
 
+      <!-- Mockito's default "inline" mock maker instruments concrete classes
+           via ByteBuddy at runtime. ByteBuddy 1.14.x doesn't yet recognize
+           Java 25's class file version, so @MockBean on a concrete class
+           (MovieService, StarService) fails with "Java 25 (69) is not
+           supported by the current version of Byte Buddy ... set
+           net.bytebuddy.experimental as a VM property" -- this is exactly
+           that officially-documented escape hatch. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Dnet.bytebuddy.experimental=true</argLine>
+        </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>

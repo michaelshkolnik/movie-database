@@ -37,7 +37,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource(properties = "spring.jpa.hibernate.ddl-auto=create-drop")
 @Testcontainers
-class MovieSpecificationsIT {
+class MovieSpecificationsTest {
 
     @Container
     @ServiceConnection
