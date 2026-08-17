@@ -83,7 +83,17 @@ class MovieSpecificationsTest {
         // Both stars match a "Brando" substring search on the SAME movie --
         // exactly the fan-out that used to require query.distinct(true).
         godfather.setStars(Set.of(brando, brandon));
-        movieRepository.save(godfather);
+        // Movie's id is manually assigned (not @GeneratedValue), so Spring
+        // Data's default isNew() check (id != null) treats this as an
+        // *existing* entity and routes save() through entityManager.merge()
+        // rather than persist(). merge() returns a different, newly-managed
+        // Movie instance and leaves the original `godfather` reference
+        // detached. Reassigning here is required -- reusing the stale
+        // `godfather` reference below (e.g. for rating.setMovie) would hand
+        // Hibernate a second, distinct Movie#100 instance and it throws
+        // NonUniqueObjectException when the session already has the merged
+        // one registered under that same id.
+        godfather = movieRepository.save(godfather);
 
         Rating rating = new Rating();
         rating.setMovie(godfather);
