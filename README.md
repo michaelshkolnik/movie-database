@@ -33,8 +33,10 @@ have been removed accordingly.
 ## Prerequisites
 
 - Java 21
-- Maven (or use `./mvnw` once the wrapper is added)
-- Docker + Docker Compose
+- Maven (a wrapper isn't checked in yet -- run `mvn -N wrapper:wrapper` once
+  to generate `./mvnw`/`./mvnw.cmd` if you'd rather not rely on a global
+  Maven install)
+- Docker + Docker Compose (also used by the test suite -- see "Testing")
 
 ## Local setup
 
@@ -176,6 +178,25 @@ The `customers`, `credit_cards`, `sales`, and `employees` tables from the
 original coursework project (and the `add_movie` stored procedure) have
 been dropped from the schema entirely — they only ever existed to support
 login/cart/checkout, which this project doesn't have.
+
+## Testing
+
+```
+mvn test
+```
+
+Controller tests (`MovieControllerTest`, `StarControllerTest`,
+`BrowseControllerTest`, `HealthControllerTest`) are pure `@WebMvcTest`
+slices with mocked services/repositories -- no database needed.
+
+`MovieSpecificationsIT` is different: it spins up a real MySQL container via
+Testcontainers (not H2) and exercises `MovieSpecifications` directly,
+because the bug it guards against -- MySQL rejecting
+`SELECT DISTINCT ... ORDER BY <expr not in the SELECT list>` -- is specific
+to MySQL's dialect and wouldn't reproduce against an embedded database. This
+means **Docker needs to be running** for `mvn test` to pass, independent of
+whatever's in `docker-compose.yml` (Testcontainers manages its own
+short-lived container).
 
 ## Configuration
 

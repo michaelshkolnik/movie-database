@@ -91,7 +91,14 @@ async function loadPage() {
     const data = await fetchJSON(`/api/movies?${qs(q)}`);
 
     grid.innerHTML = "";
-    data.forEach((m) => grid.appendChild(buildCard(m, q.n)));
+    if (data.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "empty-state";
+        empty.textContent = "No movies found. Try a different search or filter.";
+        grid.appendChild(empty);
+    } else {
+        data.forEach((m) => grid.appendChild(buildCard(m, q.n)));
+    }
 
     const p = parseInt(q.page, 10);
     pageInfo.textContent = `Page ${p}`;

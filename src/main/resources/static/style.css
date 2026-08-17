@@ -429,3 +429,45 @@ input:focus, select:focus {
 .star-heading h1 {
     margin: 0;
 }
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-muted);
+    padding: 48px 16px;
+    font-size: 15px;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 640px) {
+    .site-header {
+        padding: 16px 20px;
+    }
+
+    .page {
+        padding: 0 20px 32px;
+    }
+
+    .detail-layout {
+        flex-direction: column;
+    }
+
+    .poster-large {
+        width: 100%;
+        max-width: 260px;
+    }
+
+    .star-heading {
+        flex-wrap: wrap;
+    }
+
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 14px;
+    }
+
+    .backdrop-banner {
+        height: 200px;
+    }
+}
