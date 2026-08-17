@@ -6,24 +6,22 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
+<header class="site-header">
+    <div class="brand">Fab<span>flix</span></div>
+    <button id="back-list" class="btn-ghost">Back to Results</button>
+</header>
+
+<div class="page">
     <div class="star-heading">
         <img id="star-photo" class="profile-photo" alt="" hidden>
         <h1 id="star-name"></h1>
     </div>
-    <button id="back-list">Back to Results</button>
-</header>
 
-<section id="star-info">
     <p><strong>Birth Year:</strong> <span id="star-birth"></span></p>
-    <h3>Movies</h3>
-    <table id="star-movie-table">
-        <thead>
-        <tr><th>Poster</th><th>Title</th><th>Year</th></tr>
-        </thead>
-        <tbody id="star-movie-body"></tbody>
-    </table>
-</section>
+
+    <h2>Movies</h2>
+    <div id="star-movie-grid" class="movie-grid"></div>
+</div>
 
 <script src="js/shared.js"></script>
 <script src="js/single-star.js"></script>

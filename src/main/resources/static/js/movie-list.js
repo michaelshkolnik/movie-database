@@ -1,4 +1,4 @@
-const tbody = document.getElementById("movie-table-body");
+const grid = document.getElementById("movie-grid");
 const prevBtn = document.getElementById("prev-page");
 const nextBtn = document.getElementById("next-page");
 const pageInfo = document.getElementById("page-info");
@@ -26,28 +26,61 @@ function setSortFromParams() {
     else sortBy.value = "rating_title_desc";
 }
 
-function posterCell(posterUrl, title) {
-    const td = document.createElement("td");
+function posterMarkup(posterUrl, title) {
     if (posterUrl) {
-        const img = document.createElement("img");
-        img.className = "poster-thumb";
-        img.src = posterUrl;
-        img.alt = title || "";
-        img.loading = "lazy";
-        img.addEventListener("error", () => {
-            img.replaceWith(placeholderDiv());
-        });
-        td.appendChild(img);
-    } else {
-        td.appendChild(placeholderDiv());
+        return `<img class="poster-thumb" src="${posterUrl}" alt="${title || ""}" loading="lazy">`;
     }
-    return td;
+    return `<div class="poster-placeholder"></div>`;
 }
 
-function placeholderDiv() {
-    const div = document.createElement("div");
-    div.className = "poster-placeholder";
-    return div;
+function buildCard(m, pageSizeValue) {
+    const card = document.createElement("div");
+    card.className = "movie-card";
+
+    const posterWrap = document.createElement("div");
+    posterWrap.className = "movie-card__poster-wrap";
+    posterWrap.innerHTML = posterMarkup(m.posterUrl, m.title);
+    const posterImg = posterWrap.querySelector("img");
+    if (posterImg) {
+        posterImg.addEventListener("error", () => {
+            posterWrap.innerHTML = `<div class="poster-placeholder"></div>`;
+        });
+    }
+
+    const body = document.createElement("div");
+    body.className = "movie-card__body";
+
+    const titleLink = document.createElement("a");
+    titleLink.className = "movie-card__title";
+    titleLink.href = `single-movie.html?id=${encodeURIComponent(m.id)}`;
+    titleLink.textContent = m.title;
+
+    const meta = document.createElement("div");
+    meta.className = "movie-card__meta";
+    meta.textContent = [m.year, m.director].filter(Boolean).join(" · ");
+
+    const rating = document.createElement("div");
+    rating.innerHTML = starRatingHtml(m.rating);
+
+    const genres = document.createElement("div");
+    genres.className = "movie-card__genres";
+    genres.innerHTML = (m.genres || []).map(g =>
+        `<a href="movie-list.html?${qs({ genre: g, page: 1, n: pageSizeValue })}">${g}</a>`).join(", ");
+
+    const stars = document.createElement("div");
+    stars.className = "movie-card__stars";
+    stars.innerHTML = (m.stars || []).map(s =>
+        `<a href="single-star.html?id=${encodeURIComponent(s.id)}">${s.name}</a>`).join(", ");
+
+    body.append(titleLink, meta, rating, genres, stars);
+    card.append(posterWrap, body);
+
+    card.addEventListener("click", (e) => {
+        if (e.target.closest("a")) return; // let nested genre/star links behave normally
+        nav(`single-movie.html?id=${encodeURIComponent(m.id)}`);
+    });
+
+    return card;
 }
 
 async function loadPage() {
@@ -57,39 +90,8 @@ async function loadPage() {
 
     const data = await fetchJSON(`/api/movies?${qs(q)}`);
 
-    tbody.innerHTML = "";
-
-    data.forEach((m) => {
-        const tr = document.createElement("tr");
-
-        const poster = posterCell(m.posterUrl, m.title);
-
-        const title = document.createElement("td");
-        const a = document.createElement("a");
-        a.href = `single-movie.html?id=${encodeURIComponent(m.id)}`;
-        a.textContent = m.title;
-        title.appendChild(a);
-
-        const year = document.createElement("td");
-        year.textContent = m.year;
-
-        const dir = document.createElement("td");
-        dir.textContent = m.director;
-
-        const gens = document.createElement("td");
-        gens.innerHTML = (m.genres || []).map(g =>
-            `<a href="movie-list.html?${qs({ genre: g, page: 1, n: q.n })}">${g}</a>`).join(", ");
-
-        const stars = document.createElement("td");
-        stars.innerHTML = (m.stars || []).map(s =>
-            `<a href="single-star.html?id=${encodeURIComponent(s.id)}">${s.name}</a>`).join(", ");
-
-        const rating = document.createElement("td");
-        rating.innerHTML = starRatingHtml(m.rating);
-
-        tr.append(poster, title, year, dir, gens, stars, rating);
-        tbody.appendChild(tr);
-    });
+    grid.innerHTML = "";
+    data.forEach((m) => grid.appendChild(buildCard(m, q.n)));
 
     const p = parseInt(q.page, 10);
     pageInfo.textContent = `Page ${p}`;
@@ -125,4 +127,5 @@ sortBy.addEventListener("change", () => {
 
 backMain.addEventListener("click", () => nav("main.html"));
 
+setSortFromParams();
 loadPage();

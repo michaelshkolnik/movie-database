@@ -2,35 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fabflix Main</title>
+    <title>Fabflix</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-    <h1>Fabflix</h1>
+<header class="site-header">
+    <div class="brand">Fab<span>flix</span></div>
 </header>
 
-<section id="search-section">
-    <h2>Search Movies</h2>
+<div class="page">
+    <section id="search-section">
+        <h2>Search Movies</h2>
 
-    <form id="search-form">
-        <input type="text" id="title-input" name="title" placeholder="Title" autocomplete="off">
-        <div id="autocomplete-box" class="autocomplete-box"></div>
+        <form id="search-form" class="search-bar">
+            <div class="search-field">
+                <input type="text" id="title-input" name="title" placeholder="Title" autocomplete="off">
+                <div id="autocomplete-box" class="autocomplete-box"></div>
+            </div>
 
-        <input type="text" name="year" placeholder="Year">
-        <input type="text" name="director" placeholder="Director">
-        <input type="text" name="star" placeholder="Star">
-        <button type="submit">Search</button>
-    </form>
-</section>
+            <input type="text" name="year" placeholder="Year">
+            <input type="text" name="director" placeholder="Director">
+            <input type="text" name="star" placeholder="Star">
+            <button type="submit">Search</button>
+        </form>
+    </section>
 
-<section id="browse-section">
-    <h2>Browse by Genre</h2>
-    <div id="genre-list"></div>
+    <section id="browse-section">
+        <h2>Browse by Genre</h2>
+        <div id="genre-list" class="browse-links"></div>
 
-    <h2>Browse by Title</h2>
-    <div id="letter-list"></div>
-</section>
+        <h2>Browse by Title</h2>
+        <div id="letter-list" class="browse-links"></div>
+    </section>
+</div>
 
 <script src="js/shared.js"></script>
 <script src="js/main.js"></script>

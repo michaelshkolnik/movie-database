@@ -2,52 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Movie List</title>
+    <title>Movie Results</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-    <h1>Movie Results</h1>
-    <button id="back-main">Back to Main</button>
+<header class="site-header">
+    <div class="brand">Fab<span>flix</span></div>
+    <button id="back-main" class="btn-ghost">Back to Main</button>
 </header>
 
-<section id="controls">
-    <label>Sort By:</label>
-    <select id="sort-by">
-        <option value="title_rating_asc">Title ↑</option>
-        <option value="title_rating_desc">Title ↓</option>
-        <option value="rating_title_asc">Rating ↑</option>
-        <option value="rating_title_desc">Rating ↓</option>
-    </select>
+<div class="page">
+    <h1>Movie Results</h1>
 
-    <label>Page Size:</label>
-    <select id="page-size">
-        <option value="10">10</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
-    </select>
-</section>
+    <div class="controls-bar">
+        <span>
+            <label for="sort-by">Sort by</label>
+            <select id="sort-by">
+                <option value="title_rating_asc">Title ↑</option>
+                <option value="title_rating_desc">Title ↓</option>
+                <option value="rating_title_asc">Rating ↑</option>
+                <option value="rating_title_desc">Rating ↓</option>
+            </select>
+        </span>
 
-<table id="movie-table">
-    <thead>
-    <tr>
-        <th>Poster</th>
-        <th>Title</th>
-        <th>Year</th>
-        <th>Director</th>
-        <th>Genres</th>
-        <th>Stars</th>
-        <th>Rating</th>
-    </tr>
-    </thead>
-    <tbody id="movie-table-body"></tbody>
-</table>
+        <span>
+            <label for="page-size">Per page</label>
+            <select id="page-size">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </span>
+    </div>
 
-<div id="pagination">
-    <button id="prev-page">Previous</button>
-    <span id="page-info"></span>
-    <button id="next-page">Next</button>
+    <div id="movie-grid" class="movie-grid"></div>
+
+    <div id="pagination">
+        <button id="prev-page" class="btn-ghost">Previous</button>
+        <span id="page-info"></span>
+        <button id="next-page" class="btn-ghost">Next</button>
+    </div>
 </div>
 
 <script src="js/shared.js"></script>
