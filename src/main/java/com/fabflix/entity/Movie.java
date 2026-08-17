@@ -6,6 +6,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -25,18 +26,32 @@ import org.hibernate.annotations.BatchSize;
 @EqualsAndHashCode(of = "id")
 public class Movie {
 
+    // TMDb's own numeric movie id, as a string.
     @Id
-    @Column(length = 10)
+    @Column(length = 20)
     private String id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 200)
     private String title;
 
     @Column(nullable = false)
     private Integer year;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 200)
     private String director;
+
+    @Lob
+    @Column
+    private String overview;
+
+    // Relative TMDb image path (e.g. "/abc123.jpg"), not a full URL — the
+    // API layer combines this with TMDb's image CDN base URL. Null when
+    // TMDb has no poster/backdrop for a given movie.
+    @Column(name = "poster_path", length = 255)
+    private String posterPath;
+
+    @Column(name = "backdrop_path", length = 255)
+    private String backdropPath;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

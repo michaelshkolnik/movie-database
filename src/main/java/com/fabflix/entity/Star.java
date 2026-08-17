@@ -17,13 +17,19 @@ import lombok.Setter;
 @EqualsAndHashCode(of = "id")
 public class Star {
 
+    // TMDb's own numeric person id, as a string.
     @Id
-    @Column(length = 10)
+    @Column(length = 20)
     private String id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 150)
     private String name;
 
     @Column(name = "birth_year")
     private Integer birthYear;
+
+    // Relative TMDb image path, same convention as Movie.posterPath. Null
+    // when TMDb has no headshot on file for this person.
+    @Column(name = "profile_path", length = 255)
+    private String profilePath;
 }

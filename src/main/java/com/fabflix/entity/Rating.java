@@ -27,7 +27,7 @@ import lombok.Setter;
 public class Rating {
 
     @Id
-    @Column(name = "movie_id", length = 10)
+    @Column(name = "movie_id", length = 20)
     private String movieId;
 
     @OneToOne(fetch = FetchType.LAZY)
