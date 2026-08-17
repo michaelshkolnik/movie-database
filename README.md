@@ -163,10 +163,14 @@ docker compose up -d
 ## About the seed data
 
 All movie/star/genre/rating data comes from `scripts/seed_tmdb.py`, which
-pulls it live from the TMDb API (see "Local setup" above) — `db/init/`
-itself only ships the schema (`00_schema.sql`) plus empty placeholder files
-that the script overwrites. There's no data checked into the repo, so
-nothing to scrub for secrets or fake PII.
+pulls it live from the TMDb API (see "Local setup" above) and writes the
+result into `db/init/01_genres.sql` through `09_ratings.sql`. A generated
+snapshot (300 movies) is checked into the repo so `docker compose up`
+works out of the box without needing a TMDb API key first — re-run the
+script (with your own key) any time you want a fresh or bigger dataset,
+which overwrites those files. `db/init/00_schema.sql` (the schema) is
+hand-written and not touched by the script. Nothing in the generated
+files is secret or personal beyond what TMDb already serves publicly.
 
 IDs (`movies.id`, `stars.id`, `genres.id`) are TMDb's own numeric IDs, not
 the original coursework's IMDb-style `tt.../nm...` identifiers. Poster,
