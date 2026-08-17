@@ -10,9 +10,17 @@ Boot) — only the backend is being rebuilt.
 ## Status
 
 Search/browse/single-movie/single-star are ported: JPA entities mapped to
-the existing schema, Spring Data repositories, dynamic query building via
+the schema, Spring Data repositories, dynamic query building via
 `Specification`, and `@RestController`s serving the same JSON shapes the
 static frontend already expects. See "API" below for the full list.
+
+The dataset itself is sourced from [TMDb](https://www.themoviedb.org/)
+(The Movie Database) rather than the original coursework's MySQL/XML/Mongo
+lineage — a one-time script (`scripts/seed_tmdb.py`) pulls a curated set of
+popular movies, cast, and genres, including posters, backdrops, cast photos,
+and overviews. See "Local setup" below: **you need to run this script once
+before your first `docker compose up`**, since `db/init/` ships with empty
+placeholder seed files, not data.
 
 **Login, shopping cart/checkout, and reCAPTCHA from the original coursework
 project are intentionally not being ported.** They were classroom-project
@@ -30,39 +38,54 @@ have been removed accordingly.
 
 ## Local setup
 
-1. Copy the env template and fill in values (defaults work as-is for local dev):
+1. Copy the env template and fill in values (defaults work as-is for local
+   dev, except `TMDB_API_KEY` — get a free one at
+   https://www.themoviedb.org/settings/api):
 
    ```
    cp .env.example .env
    ```
 
-2. Start MySQL (+ Adminer for browsing the DB at http://localhost:8081):
+2. Generate the seed data from TMDb (one-time, pure-stdlib Python — no pip
+   installs needed). This overwrites `db/init/01_genres.sql` through
+   `db/init/05_genres_in_movies.sql` and `db/init/09_ratings.sql`:
+
+   ```
+   python3 scripts/seed_tmdb.py
+   ```
+
+   Pulls 300 popular movies by default; see the script's docstring for
+   `TMDB_MOVIE_COUNT`/`TMDB_MIN_VOTES`/`TMDB_CAST_SIZE` overrides. Takes a
+   few minutes — it fetches full detail+credits per movie plus a birth-year
+   lookup per unique cast member.
+
+3. Start MySQL (+ Adminer for browsing the DB at http://localhost:8081):
 
    ```
    docker compose up -d
    ```
 
-   On first start only, this loads the full schema and seed data from
-   `db/init/` (movies, stars, genres, ratings, and demo customers/credit
-   cards/sales) into a `moviedb` database. If you need to reseed later,
-   `docker compose down -v` first to wipe the data volume.
+   On first start only, this loads the schema and the seed data generated in
+   step 2 into a `moviedb` database. If you need to reseed later (e.g. after
+   re-running the script with different settings), `docker compose down -v`
+   first to wipe the data volume, then `up -d` again.
 
-3. Run the app:
+4. Run the app:
 
    ```
    mvn spring-boot:run
    ```
 
-4. Check it's up and can see the database:
+5. Check it's up and can see the database:
 
    ```
    curl http://localhost:8080/api/health
    ```
 
-   Should return `{"app":"up","database":"up","movieCount":9052}` (or
+   Should return `{"app":"up","database":"up","movieCount":300}` (or
    however many rows currently exist).
 
-5. Open http://localhost:8080 for the frontend.
+6. Open http://localhost:8080 for the frontend.
 
 ## API
 
@@ -137,25 +160,22 @@ docker compose up -d
 
 ## About the seed data
 
-`db/init/` contains SQL dumps carried over from the original project. It's
-useful for local development, but worth knowing what's in it:
+All movie/star/genre/rating data comes from `scripts/seed_tmdb.py`, which
+pulls it live from the TMDb API (see "Local setup" above) — `db/init/`
+itself only ships the schema (`00_schema.sql`) plus empty placeholder files
+that the script overwrites. There's no data checked into the repo, so
+nothing to scrub for secrets or fake PII.
 
-- Customer records use **plaintext demo passwords** (e.g. `'keyboard'`,
-  `'paper'`) — fine for local dev, never treat as real credentials.
-- `credit_cards` only stores a name + expiration date behind an id, not an
-  actual card number — never real payment data.
-- There's a demo `employees` login seeded in (`classta@email.edu` /
-  `classta`) from the original coursework project.
+IDs (`movies.id`, `stars.id`, `genres.id`) are TMDb's own numeric IDs, not
+the original coursework's IMDb-style `tt.../nm...` identifiers. Poster,
+backdrop, and profile images are stored as relative TMDb CDN paths and
+expanded to full URLs at the API layer (`TmdbImageUrls`), so nothing
+image-related is duplicated between the DB and the app config.
 
-The `customers`, `credit_cards`, `sales`, and `employees` tables are no
-longer used by the app now that login/cart/checkout have been dropped —
-they're still in the schema/seed data for now (removing them cleanly means
-touching `createtable.sql` and the `db/init/` load order), but nothing in
-the running app reads or writes them.
-
-Once TMDb-backed seeding is wired up, the movie/star data will likely be
-replaced or supplemented with richer, current data (posters, cast photos,
-overviews) pulled from the TMDb API.
+The `customers`, `credit_cards`, `sales`, and `employees` tables from the
+original coursework project (and the `add_movie` stored procedure) have
+been dropped from the schema entirely — they only ever existed to support
+login/cart/checkout, which this project doesn't have.
 
 ## Configuration
 
@@ -167,15 +187,15 @@ or a specific DB host, unlike the original project.
 |---|---|
 | `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` | MySQL connection |
 | `MYSQL_ROOT_PASSWORD` | Only used by docker-compose to bootstrap MySQL |
-| `TMDB_API_KEY` | Not consumed yet — reserved for the data-seeding step |
+| `TMDB_API_KEY` | Used by `scripts/seed_tmdb.py` to pull data from TMDb |
 | `SERVER_PORT` | Defaults to 8080 |
 
 ## Roadmap
 
 1. ~~JPA entities + Spring Data repositories mapped to the existing schema.~~ Done.
 2. ~~Port search/browse/autocomplete/single-movie/single-star into `@RestController`s under `/api/...`.~~ Done.
-3. TMDb-backed data seeding script to replace/enrich the current dataset
-   with posters, cast photos, and current metadata.
+3. ~~TMDb-backed data seeding script and schema redesign; posters/overviews/cast
+   photos end-to-end through the API and frontend.~~ Done.
 4. Deploy: containerize, managed MySQL, host the app somewhere public.
 
 Explicitly out of scope: login, shopping cart/checkout, reCAPTCHA, and admin
