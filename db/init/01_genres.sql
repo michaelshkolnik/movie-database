@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 INSERT INTO genres VALUES(1,'Action');
 INSERT INTO genres VALUES(2,'Adult');
 INSERT INTO genres VALUES(3,'Adventure');

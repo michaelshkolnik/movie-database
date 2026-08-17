@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 USE moviedb;
 
 DROP PROCEDURE IF EXISTS add_movie;

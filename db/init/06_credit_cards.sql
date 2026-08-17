@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 INSERT INTO credit_cards VALUES('490001', 'James', 'Brown', '2007/09/20');
 INSERT INTO credit_cards VALUES('490002', 'Margaret', 'Black', '2006/05/20');
 INSERT INTO credit_cards VALUES('490003', 'Keith', 'Black', '2006/06/25');

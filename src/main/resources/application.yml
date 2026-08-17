@@ -3,7 +3,7 @@ spring:
     name: fabflix
 
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/moviedb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/moviedb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8}
     username: ${DB_USERNAME:fabflix}
     password: ${DB_PASSWORD:fabflix}
     driver-class-name: com.mysql.cj.jdbc.Driver

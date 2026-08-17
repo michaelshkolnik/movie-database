@@ -7,7 +7,16 @@ services:
     # a JDBC-over-plain-TCP auth failure that caching_sha2_password triggers unless the
     # connection is TLS or does a full RSA key exchange. Fine for local dev; revisit if
     # this ever needs to be a hardened/production auth setup.
-    command: --default-authentication-plugin=mysql_native_password
+    #
+    # character-set-server/collation-server force utf8mb4 as the server default so any
+    # client (including the mysql CLI that loads db/init/*.sql, and our JDBC connection)
+    # that doesn't explicitly negotiate a charset still gets one that can round-trip the
+    # accented names in the seed data correctly. Belt-and-suspenders alongside the
+    # `SET NAMES utf8mb4;` line each db/init/*.sql file now starts with.
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
       MYSQL_DATABASE: moviedb

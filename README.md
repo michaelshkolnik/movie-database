@@ -116,6 +116,25 @@ networking by logging into Adminer (http://localhost:8081) with Server
 `fabflix`, password `fabflix`, database `moviedb` — that path goes through
 Docker's internal network and bypasses port 3306 on the host entirely.
 
+**Names/titles come back mangled, e.g. `Böhler` shows up as `BÃ¶hler` or
+`GÃ©rard`.**
+
+Classic MySQL double-encoding: the seed SQL files are UTF-8, but without an
+explicit charset the client connection used to load them (and potentially
+the JDBC connection to query them) defaults to something else, so UTF-8
+bytes get reinterpreted as Latin-1 and re-encoded — twice. Fixed by having
+`db/init/*.sql` start with `SET NAMES utf8mb4;`, forcing the MySQL server to
+default to `utf8mb4` (`docker-compose.yml`'s `command:`), and adding
+`useUnicode=true&characterEncoding=UTF-8` to the JDBC URL. If you hit this
+before pulling that fix, the bad bytes are already persisted in your data
+volume — a config change alone won't retroactively fix rows that already
+went in wrong. Reseed:
+
+```
+docker compose down -v
+docker compose up -d
+```
+
 ## About the seed data
 
 `db/init/` contains SQL dumps carried over from the original project. It's

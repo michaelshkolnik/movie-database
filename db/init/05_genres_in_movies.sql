@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 INSERT INTO genres_in_movies VALUES(6,'tt0094859');
 INSERT INTO genres_in_movies VALUES(9,'tt0096056');
 INSERT INTO genres_in_movies VALUES(9,'tt0100275');

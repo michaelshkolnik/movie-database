@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 INSERT INTO customers VALUES(490001, 'James', 'Brown', '490001', '530 White Ave., Los Angeles, CA 91701', 'jbrown@ics185.edu', 'keyboard');
 INSERT INTO customers VALUES(490002, 'John', 'Black', '490002', '531 Green Ave., Anaheim, CA 92456', 'jblack@ics185.edu', 'paper');
 INSERT INTO customers VALUES(490003, 'Keith', 'White', '490003', '532 Yale Ave., Irvine, CA 92617', 'kwhite@ics185.edu', 'book');

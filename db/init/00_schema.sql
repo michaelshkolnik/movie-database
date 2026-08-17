@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 DROP DATABASE IF EXISTS moviedb;
 CREATE DATABASE moviedb;
 USE moviedb;
