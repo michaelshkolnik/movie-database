@@ -30,3 +30,7 @@ Thumbs.db
 # MySQL data volume if ever run bind-mounted instead of a named volume
 mysql-data/
 _to_delete/
+
+# Python
+__pycache__/
+*.pyc
