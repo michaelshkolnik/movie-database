@@ -20,6 +20,13 @@
 
   <properties>
     <java.version>21</java.version>
+    <!-- Spring Boot 3.3.4 manages Lombok 1.18.32 by default, which predates
+         javac-internals patches for JDK 24/25+ and fails with
+         "ExceptionInInitializerError: com.sun.tools.javac.code.TypeTag ::
+         UNKNOWN" when compiled with a newer JDK on PATH (independent of the
+         java.version/--release target above). Pin to a release known to
+         support current JDKs. -->
+    <lombok.version>1.18.46</lombok.version>
   </properties>
 
   <dependencies>
