@@ -8,14 +8,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         const res = await fetch("/api/browse");
         const data = await res.json();
 
-        // Genres
+        // Genres — link straight to search results, same as main.html's own
+        // embedded browse section (movie-list.html actually reads these
+        // params; main.html does not).
         genreContainer.innerHTML = data.genres
-            .map(g => `<a href="main.html?genre=${encodeURIComponent(g)}">${g}</a>`)
+            .map(g => `<a href="movie-list.html?genre=${encodeURIComponent(g)}&page=1&n=10">${g}</a>`)
             .join(" | ");
 
         // Letters and numbers
         letterContainer.innerHTML = data.letters
-            .map(l => `<a href="main.html?startsWith=${encodeURIComponent(l)}">${l}</a>`)
+            .map(l => `<a href="movie-list.html?startsWith=${encodeURIComponent(l)}&page=1&n=10">${l}</a>`)
             .join(" ");
     } catch (err) {
         genreContainer.textContent = "Failed to load genres.";
