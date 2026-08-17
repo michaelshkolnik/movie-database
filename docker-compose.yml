@@ -3,6 +3,11 @@ services:
     image: mysql:8.0
     container_name: fabflix-mysql
     restart: unless-stopped
+    # mysql_native_password (instead of MySQL 8's default caching_sha2_password) avoids
+    # a JDBC-over-plain-TCP auth failure that caching_sha2_password triggers unless the
+    # connection is TLS or does a full RSA key exchange. Fine for local dev; revisit if
+    # this ever needs to be a hardened/production auth setup.
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
       MYSQL_DATABASE: moviedb
