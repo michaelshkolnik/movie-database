@@ -8,6 +8,8 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,6 +24,16 @@ import org.springframework.data.jpa.domain.Specification;
  * automatic Sort-by-nested-property mechanism, which can't null-coalesce
  * across an optional association. Callers must pass an unsorted Pageable so
  * Spring Data doesn't overwrite this ordering afterward.
+ *
+ * genreNameEquals/starNameContains filter via a correlated IN-subquery
+ * rather than joining genres/stars directly onto the root: a direct join can
+ * fan a movie out into multiple rows (e.g. several stars whose name matches
+ * the same search term), which used to be handled with SELECT DISTINCT —
+ * but MySQL rejects DISTINCT combined with an ORDER BY expression that
+ * isn't in the SELECT list (exactly what the rating-coalesce sort above
+ * produces), throwing "Expression ... is not in SELECT list ... this is
+ * incompatible with DISTINCT". A subquery can't fan out the outer query at
+ * all, so no DISTINCT is ever needed here.
  */
 public final class MovieSpecifications {
 
@@ -36,7 +48,6 @@ public final class MovieSpecifications {
     public static Specification<Movie> titleContainsAllTokens(String text) {
         String[] tokens = text.trim().split("\\s+");
         return (root, query, cb) -> {
-            query.distinct(true);
             List<Predicate> predicates = new ArrayList<>();
             for (String token : tokens) {
                 if (!token.isBlank()) {
@@ -59,17 +70,23 @@ public final class MovieSpecifications {
     public static Specification<Movie> starNameContains(String star) {
         String needle = "%" + star.toLowerCase() + "%";
         return (root, query, cb) -> {
-            query.distinct(true);
-            Join<Movie, Star> stars = root.join("stars");
-            return cb.like(cb.lower(stars.get("name")), needle);
+            Subquery<String> sub = query.subquery(String.class);
+            Root<Movie> subRoot = sub.from(Movie.class);
+            Join<Movie, Star> stars = subRoot.join("stars");
+            sub.select(subRoot.get("id"));
+            sub.where(cb.like(cb.lower(stars.get("name")), needle));
+            return root.get("id").in(sub);
         };
     }
 
     public static Specification<Movie> genreNameEquals(String genre) {
         return (root, query, cb) -> {
-            query.distinct(true);
-            Join<Movie, Genre> genres = root.join("genres");
-            return cb.equal(genres.get("name"), genre);
+            Subquery<String> sub = query.subquery(String.class);
+            Root<Movie> subRoot = sub.from(Movie.class);
+            Join<Movie, Genre> genres = subRoot.join("genres");
+            sub.select(subRoot.get("id"));
+            sub.where(cb.equal(genres.get("name"), genre));
+            return root.get("id").in(sub);
         };
     }
 
@@ -105,8 +122,7 @@ public final class MovieSpecifications {
         };
     }
 
-    private static Expression<Number> ratingExpression(
-            jakarta.persistence.criteria.Root<Movie> root, jakarta.persistence.criteria.CriteriaBuilder cb) {
+    private static Expression<Number> ratingExpression(Root<Movie> root, jakarta.persistence.criteria.CriteriaBuilder cb) {
         Join<Movie, Rating> ratingInfo = root.join("ratingInfo", JoinType.LEFT);
         return cb.coalesce(ratingInfo.get("rating"), 0.0);
     }
