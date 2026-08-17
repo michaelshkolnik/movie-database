@@ -40,8 +40,13 @@ public class Movie {
     @Column(nullable = false, length = 200)
     private String director;
 
+    // Hibernate's MySQLDialect picks a concrete column type for @Lob String
+    // fields from the @Column length: <=255 -> TINYTEXT, <=65535 -> TEXT,
+    // etc. Leaving length unset defaults to JPA's 255, which schema
+    // validation then rejects against the TEXT column 00_schema.sql
+    // actually creates. Set explicitly so the two agree.
     @Lob
-    @Column
+    @Column(length = 65535)
     private String overview;
 
     // Relative TMDb image path (e.g. "/abc123.jpg"), not a full URL — the
