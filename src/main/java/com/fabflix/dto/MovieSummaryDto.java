@@ -9,6 +9,9 @@ public record MovieSummaryDto(
         Integer year,
         String director,
         Double rating,
+        String overview,
+        String posterUrl,
+        String backdropUrl,
         List<String> genres,
         List<StarRefDto> stars) {
 }

@@ -8,6 +8,7 @@ import com.fabflix.entity.Genre;
 import com.fabflix.entity.Movie;
 import com.fabflix.repository.MovieRepository;
 import com.fabflix.repository.MovieSpecifications;
+import com.fabflix.util.TmdbImageUrls;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -98,7 +99,9 @@ public class MovieService {
         return movieRepository.findAll(spec, pageable)
                 .getContent()
                 .stream()
-                .map(m -> new MovieBriefDto(m.getId(), m.getTitle(), m.getYear(), m.getDirector()))
+                .map(m -> new MovieBriefDto(
+                        m.getId(), m.getTitle(), m.getYear(), m.getDirector(),
+                        TmdbImageUrls.poster(m.getPosterPath())))
                 .toList();
     }
 
@@ -108,9 +111,19 @@ public class MovieService {
                 : 0.0;
         List<String> genres = m.getGenres().stream().map(Genre::getName).toList();
         List<StarRefDto> stars = m.getStars().stream()
-                .map(s -> new StarRefDto(s.getId(), s.getName()))
+                .map(s -> new StarRefDto(s.getId(), s.getName(), TmdbImageUrls.profile(s.getProfilePath())))
                 .toList();
-        return new MovieSummaryDto(m.getId(), m.getTitle(), m.getYear(), m.getDirector(), rating, genres, stars);
+        return new MovieSummaryDto(
+                m.getId(),
+                m.getTitle(),
+                m.getYear(),
+                m.getDirector(),
+                rating,
+                m.getOverview(),
+                TmdbImageUrls.poster(m.getPosterPath()),
+                TmdbImageUrls.backdrop(m.getBackdropPath()),
+                genres,
+                stars);
     }
 
     private static String trim(String s) {

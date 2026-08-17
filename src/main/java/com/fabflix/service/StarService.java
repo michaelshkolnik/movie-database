@@ -6,6 +6,7 @@ import com.fabflix.entity.Movie;
 import com.fabflix.entity.Star;
 import com.fabflix.repository.MovieRepository;
 import com.fabflix.repository.StarRepository;
+import com.fabflix.util.TmdbImageUrls;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -29,11 +30,13 @@ public class StarService {
                     .map(this::toMovieRef)
                     .toList();
             String birthYear = star.getBirthYear() == null ? "" : star.getBirthYear().toString();
-            return new StarDetailDto(star.getId(), star.getName(), birthYear, movies);
+            return new StarDetailDto(
+                    star.getId(), star.getName(), birthYear,
+                    TmdbImageUrls.profile(star.getProfilePath()), movies);
         });
     }
 
     private MovieRefDto toMovieRef(Movie m) {
-        return new MovieRefDto(m.getId(), m.getTitle(), m.getYear());
+        return new MovieRefDto(m.getId(), m.getTitle(), m.getYear(), TmdbImageUrls.poster(m.getPosterPath()));
     }
 }

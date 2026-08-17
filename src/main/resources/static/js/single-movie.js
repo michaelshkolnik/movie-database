@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const ratingEl = document.getElementById("movie-rating");
     const genresEl = document.getElementById("movie-genres");
     const starsEl = document.getElementById("movie-stars");
+    const overviewEl = document.getElementById("movie-overview");
+    const posterEl = document.getElementById("movie-poster");
+    const backdropEl = document.getElementById("movie-backdrop");
 
     function fetchMovie() {
         fetch(`/api/single-movie?id=${movieId}`)
@@ -24,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 yearEl.textContent = movie.year || "";
                 directorEl.textContent = movie.director || "";
                 ratingEl.textContent = movie.rating || "N/A";
+                overviewEl.textContent = movie.overview || "";
 
                 genresEl.innerHTML = movie.genres
                     ? movie.genres.map((g) => `<span class="pill">${g}</span>`).join(" ")
@@ -37,6 +41,24 @@ document.addEventListener("DOMContentLoaded", () => {
                         )
                         .join(", ")
                     : "None";
+
+                if (movie.posterUrl) {
+                    posterEl.src = movie.posterUrl;
+                    posterEl.alt = movie.title || "";
+                    posterEl.hidden = false;
+                    posterEl.addEventListener("error", () => {
+                        posterEl.hidden = true;
+                    });
+                } else {
+                    posterEl.hidden = true;
+                }
+
+                if (movie.backdropUrl) {
+                    backdropEl.style.backgroundImage = `url("${movie.backdropUrl}")`;
+                    backdropEl.style.display = "block";
+                } else {
+                    backdropEl.style.display = "none";
+                }
             })
             .catch((err) => console.error("Failed to load movie:", err));
     }

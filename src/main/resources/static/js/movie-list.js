@@ -26,6 +26,30 @@ function setSortFromParams() {
     else sortBy.value = "rating_title_desc";
 }
 
+function posterCell(posterUrl, title) {
+    const td = document.createElement("td");
+    if (posterUrl) {
+        const img = document.createElement("img");
+        img.className = "poster-thumb";
+        img.src = posterUrl;
+        img.alt = title || "";
+        img.loading = "lazy";
+        img.addEventListener("error", () => {
+            img.replaceWith(placeholderDiv());
+        });
+        td.appendChild(img);
+    } else {
+        td.appendChild(placeholderDiv());
+    }
+    return td;
+}
+
+function placeholderDiv() {
+    const div = document.createElement("div");
+    div.className = "poster-placeholder";
+    return div;
+}
+
 async function loadPage() {
     const q = Object.fromEntries(urlp.entries());
     q.n = q.n || "10";
@@ -37,6 +61,8 @@ async function loadPage() {
 
     data.forEach((m) => {
         const tr = document.createElement("tr");
+
+        const poster = posterCell(m.posterUrl, m.title);
 
         const title = document.createElement("td");
         const a = document.createElement("a");
@@ -61,7 +87,7 @@ async function loadPage() {
         const rating = document.createElement("td");
         rating.textContent = Number(m.rating || 0).toFixed(1);
 
-        tr.append(title, year, dir, gens, stars, rating);
+        tr.append(poster, title, year, dir, gens, stars, rating);
         tbody.appendChild(tr);
     });
 
