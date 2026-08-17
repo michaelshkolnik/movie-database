@@ -9,13 +9,12 @@ Boot) — only the backend is being rebuilt.
 
 ## Status
 
-This is the initial scaffold: a bootable Spring Boot app wired to MySQL, with
-the database auto-seeded from the original project's data on first run, and
-the static frontend copied over. There are no JPA entities or REST endpoints
-yet beyond a health check — that's next.
+Search/browse/single-movie/single-star are ported: JPA entities mapped to
+the existing schema, Spring Data repositories, dynamic query building via
+`Specification`, and `@RestController`s serving the same JSON shapes the
+static frontend already expects. See "API" below for the full list.
 
-Not yet ported: search/browse/single-movie/single-star APIs, cart/checkout,
-login. See "Roadmap" below.
+Not yet ported: cart/checkout, login. See "Roadmap".
 
 ## Prerequisites
 
@@ -54,10 +53,30 @@ login. See "Roadmap" below.
    curl http://localhost:8080/api/health
    ```
 
-   Should return `{"app":"up","database":"up","movieCount":12070}` (or
+   Should return `{"app":"up","database":"up","movieCount":9052}` (or
    however many rows currently exist).
 
 5. Open http://localhost:8080 for the frontend.
+
+## API
+
+All endpoints return JSON and match the contracts the existing frontend JS
+already expects (carried over from the original servlets):
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/movies` | Search/browse movies. Params: `title`, `fulltext`, `year`, `director`, `star`, `genre`, `startsWith`, `orderBy` (`title_rating` \| `rating_title`), `dir` (`asc` \| `desc`, defaults to descending), `n`, `page`. |
+| `GET /api/single-movie?id=` | One movie's full detail (genres, stars, rating). |
+| `GET /api/single-star?id=` | One star's detail plus the movies they appear in. |
+| `GET /api/browse` | Genre list + A-Z/0-9 letter list, for the homepage. |
+| `GET /api/autocomplete?query=` | Title suggestions (min 3 chars, up to 10). |
+| `GET /api/movies-fulltext?query=` | Title token search, up to 50 results. |
+| `GET /api/health` | Liveness/readiness check. |
+
+`title`/`fulltext`/`orderBy`/`dir` quirks (empty `dir` sorting descending,
+`fulltext` overriding every other filter, `startsWith=0` meaning "starts
+with a digit") are intentionally preserved from the original servlets so
+the frontend doesn't need any changes.
 
 ## Troubleshooting
 
@@ -124,10 +143,8 @@ or a specific DB host, unlike the original project.
 
 ## Roadmap
 
-1. JPA entities + Spring Data repositories mapped to the existing schema
-   (movies, stars, genres, ratings, customers, credit_cards, sales).
-2. Port search/browse/autocomplete/single-movie/single-star into
-   `@RestController`s under `/api/...`, backed by the repositories.
+1. ~~JPA entities + Spring Data repositories mapped to the existing schema.~~ Done.
+2. ~~Port search/browse/autocomplete/single-movie/single-star into `@RestController`s under `/api/...`.~~ Done.
 3. Cart/checkout as an explicit mock flow (no real payment data).
 4. Spring Security for login, with BCrypt-hashed passwords (replacing the
    original project's Jasypt-based approach).

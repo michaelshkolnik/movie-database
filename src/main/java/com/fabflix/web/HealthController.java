@@ -1,23 +1,23 @@
 package com.fabflix.web;
 
-import org.springframework.jdbc.core.JdbcTemplate;
+import com.fabflix.repository.MovieRepository;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
- * Simple liveness/readiness check used while the rest of the API is being ported over.
- * Confirms both that the app booted and that it can reach the database.
+ * Simple liveness/readiness check. Confirms both that the app booted and
+ * that it can reach the database, now via the JPA repository layer instead
+ * of a raw JdbcTemplate query.
  */
 @RestController
 public class HealthController {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final MovieRepository movieRepository;
 
-    public HealthController(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public HealthController(MovieRepository movieRepository) {
+        this.movieRepository = movieRepository;
     }
 
     @GetMapping("/api/health")
@@ -26,7 +26,7 @@ public class HealthController {
         status.put("app", "up");
 
         try {
-            Integer movieCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM movies", Integer.class);
+            long movieCount = movieRepository.count();
             status.put("database", "up");
             status.put("movieCount", movieCount);
         } catch (Exception e) {
