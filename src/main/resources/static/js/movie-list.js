@@ -85,7 +85,7 @@ async function loadPage() {
             `<a href="single-star.html?id=${encodeURIComponent(s.id)}">${s.name}</a>`).join(", ");
 
         const rating = document.createElement("td");
-        rating.textContent = Number(m.rating || 0).toFixed(1);
+        rating.innerHTML = starRatingHtml(m.rating);
 
         tr.append(poster, title, year, dir, gens, stars, rating);
         tbody.appendChild(tr);

@@ -22,3 +22,18 @@ function getParams() {
 function nav(href) {
     window.location.href = href;
 }
+
+/* Renders a 5-star widget (rounded to the nearest whole star -- half-star
+   unicode glyphs aren't reliably supported across fonts) from a 0-10
+   TMDb-style rating, plus the exact score. Shared by movie-list and
+   single-movie so the two pages stay visually consistent. */
+function starRatingHtml(rating0to10) {
+    const r = Number(rating0to10) || 0;
+    const outOf5 = Math.max(0, Math.min(5, r / 2));
+    const full = Math.round(outOf5);
+    const empty = 5 - full;
+
+    const stars = "★".repeat(full) + "☆".repeat(empty);
+
+    return `<span class="star-rating" title="${r.toFixed(1)} / 10">${stars}</span><span class="rating-value">${r.toFixed(1)}</span>`;
+}

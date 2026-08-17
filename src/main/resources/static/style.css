@@ -167,3 +167,15 @@ tr:hover {
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
     flex-shrink: 0;
 }
+
+.star-rating {
+    color: #f5a623;
+    letter-spacing: 1px;
+    font-size: 15px;
+}
+
+.rating-value {
+    color: #666;
+    font-size: 13px;
+    margin-left: 6px;
+}

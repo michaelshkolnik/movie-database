@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 titleEl.textContent = movie.title || "(Untitled)";
                 yearEl.textContent = movie.year || "";
                 directorEl.textContent = movie.director || "";
-                ratingEl.textContent = movie.rating || "N/A";
+                ratingEl.innerHTML = starRatingHtml(movie.rating);
                 overviewEl.textContent = movie.overview || "";
 
                 genresEl.innerHTML = movie.genres
