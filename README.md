@@ -59,6 +59,38 @@ login. See "Roadmap" below.
 
 5. Open http://localhost:8080 for the frontend.
 
+## Troubleshooting
+
+**`Access denied for user 'fabflix'@'localhost'` even though the credentials
+in `.env` are correct, and `docker exec ... mysql -ufabflix -pfabflix` works
+fine from inside the container.**
+
+Something else on your machine is already listening on port 3306 and
+intercepting the connection before it reaches the Docker container — most
+commonly a native MySQL/MariaDB server installed outside of Docker (e.g. via
+Homebrew) running as a background service. Check what's actually bound:
+
+```
+lsof -iTCP:3306 -sTCP:LISTEN -n -P
+```
+
+If you see a `mysqld` process there in addition to Docker's proxy
+(`com.docker...`), that's the culprit. Stop it:
+
+```
+brew services list          # find the exact service name
+brew services stop mysql    # or whatever name showed up
+```
+
+Then re-run `lsof` to confirm only Docker remains on port 3306, and retry
+`mvn spring-boot:run`.
+
+You can sanity-check the database itself independently of your host's
+networking by logging into Adminer (http://localhost:8081) with Server
+`mysql` (the docker-compose service name, not `localhost`), username
+`fabflix`, password `fabflix`, database `moviedb` — that path goes through
+Docker's internal network and bypasses port 3306 on the host entirely.
+
 ## About the seed data
 
 `db/init/` contains SQL dumps carried over from the original project. It's
